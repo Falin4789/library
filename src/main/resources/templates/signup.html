@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .error {
+      color: red;
+      margin: 0;
+    }
+
+    #signup {
+      display: flex;
+      justify-content: center;
+      flex: 1;
+      align-items: center;
+    }
+
+    .signupform {
+      border: 5px solid #ffd9e5;
+      padding: 15px;
+      width: 40%;
+      height: 100%;
+      display: flex;
+    }
+
+    .suform {
+      padding: 10px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .form-group {
+      padding: 10px 0px;
+      width: 100%;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .userbt {
+      display: flex;
+      flex: 1;
+    }
+
+    .userbt > button {
+      margin-left: 10px;
+    }
+
+    .userbt > input {
+      flex: 5;
+    }
+
+    .form-group>input {
+      flex: 1;
+    }
+
+    .logo {
+      display: flex;
+    }
+
+    .logo > img {
+      width: 150px;
+    }
+
+    button {
+      border-radius: 5px;
+      border: 5px solid #ffd9e5;
+      box-sizing: border-box;
+      background-color: snow;
+      font-weight: bold;
+    }
+    
+    button+button {
+      margin-top: 10px;
+    }
+
+    button:hover {
+    background-color: #ffd9e5;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="wrap">
+    <div id="signup">
+      <div class="signupform">
+        <form action="/signup" th:object="${UserForm}" method="post" class="suform">
+          <div class="logo"><img src="/image/logo.png" alt="logo"></div>
+          <div class="form-group">
+            <div class="userbt">
+              <label th:for="userId"></label>
+              <input type="text" name="userId" id="userId" placeholder="아이디">
+              <button id="idcheck">중복확인</button>
+            </div>
+            <p th:if="${userIdError}" th:text="${userIdError}" class="error"></p>
+          </div>
+          <div class="form-group">
+            <label th:for="password"></label>
+            <input type="password" name="password" id="password" placeholder="비밀번호">
+            <p th:if="${passwordError}" th:text="${passwordError}" class="error"></p>
+          </div>
+          <div class="form-group">
+            <label th:for="password_confirm"></label>
+            <input type="password" name="password_confirm" id="password_confirm" placeholder="비밀번호 확인">
+            <p th:if="${password_confirmError}" th:text="${password_confirmError}" class="error"></p>
+          </div>
+          <div class="form-group">
+            <label th:for="name"></label>
+            <input type="text" name="name" id="name" placeholder="이름">
+            <p th:if="${nameError}" th:text="${nameError}" class="error"></p>
+          </div>
+          <div class="form-group">
+            <label th:for="email"></label>
+            <input type="email" name="email" id="email" placeholder="이메일">
+            <p th:if="${emailError}" th:text="${emailError}" class="error"></p>
+          </div>
+          <button type="submit">가입하기</button>
+          <button type="button" onclick="location='/'">취소</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    let isExist = true;
+    const idcheck = document.querySelector('#idcheck');
+    idcheck.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const userId = document.querySelector('#userId').value;
+      const res = await fetch(`/userId/${userId}/exists`);
+      const data = await res.json();
+      console.log(data);
+
+      if (data == true) {
+        alert("아이디가 중복되었습니니다");
+      } else {
+        alert("사용가능한 아이디입니다");
+        isExist = false;
+      }
+    });
+
+    const submit = document.querySelector('[type=submit]');
+    submit.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (test()) {
+        if (isExist) return;
+        const form = document.querySelector('form');
+        form.submit();
+      }
+    });
+
+    function test() {
+      var password = document.getElementById("password").value;
+      var password_confirm = document.getElementById("password_confirm").value;
+
+      if (password != password_confirm) {
+        alert("패스워드가 일치하지 않습니다.");
+        return false;
+      }
+
+      if (isExist == true) {
+        alert("아이디를 다시 확인해주세요");
+        return false;
+      }
+
+      return true;
+    }
+  </script>
+</body>
+
+</html>
